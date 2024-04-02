@@ -43,7 +43,7 @@ const YourCompement = () => {
     );
 ```
 
-Recommended reading:
+## Recommended info sources:
 - [Editor.js](https://editorjs.io/)
 - [Integrating EditorJs in ReactJs by Suman Kumar](https://medium.com/@suman.kalia235/integrating-editorjs-in-reactjs-bac7fa3361a7)
 
