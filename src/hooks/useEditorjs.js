@@ -58,7 +58,7 @@ const useEditorjs = ({config, onReady = null}) => {
         return ejInstance.current;
     }
 
-    return {getEditor};
+    return {getEditor, render};
 }
 
 export default useEditorjs

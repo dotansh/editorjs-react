@@ -40,13 +40,13 @@ const Playground = () => {
             const obj = JSON.parse(e.target.value);
             const editor = await getEditor();
             console.log("editor", editor);
-            editor.render(obj);
+            render(obj);
         } catch (e) {
             console.error("Error ", e.toString())
         }
     }
 
-    const {getEditor} = useEditorjs({
+    const {getEditor, render} = useEditorjs({
         config: {
             holder: holder,
             tools: {
