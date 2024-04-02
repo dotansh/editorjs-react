@@ -1,6 +1,6 @@
 import './playground.css'
 import useEditorjs from "../hooks/useEditorjs.js";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import Header from "@editorjs/header";
 
 const initialData = {
@@ -23,27 +23,30 @@ const Playground = () => {
     const holder = "wysiwyg";
 
     const text2data = async () => {
-        if (! disableData2test) {
+        if (!disableData2test) {
             return;
         }
-        const jsonString = JSON.stringify(await getData(), undefined, 4);
+        const data = await getEditor().then((editor) => editor.save());
+        const jsonString = JSON.stringify(data, undefined, 4);
         setData(jsonString);
     }
 
-    const data2text = (e) => {
+    const data2text = async (e) => {
         if (disableData2test) {
             return;
         }
         try {
             setData(e.target.value);
-            const obj = JSON.parse(e.target.value)
+            const obj = JSON.parse(e.target.value);
+            const editor = await getEditor();
+            console.log("editor", editor);
             editor.render(obj);
         } catch (e) {
             console.error("Error ", e.toString())
         }
     }
 
-    const {getData, editor} = useEditorjs({
+    const {getEditor} = useEditorjs({
         config: {
             holder: holder,
             tools: {
@@ -54,12 +57,16 @@ const Playground = () => {
                 direction: 'rtl',
             },
             data: initialData,
+            onChange: () => {
+                console.log("on change");
+                text2data()
+            }
         },
         onReady: () => {
+            console.log("onReady")
             text2data();
             setDisableData2test(false);
-        },
-        onChange: () => {console.log("on change");text2data()}
+        }
     });
 
     return (
@@ -68,10 +75,14 @@ const Playground = () => {
             <h3>Editor.js data:</h3>
 
             {/* This is the actual Editor.js WYSIWYG element: */}
-            <section className="content" id={holder} />
+            <section className="content" id={holder}/>
             <textarea className="content" value={data || ""}
-                      onFocus={() => { setDisableData2test(false) }}
-                      onBlur={() => { setDisableData2test(true) }}
+                      onFocus={() => {
+                          setDisableData2test(false)
+                      }}
+                      onBlur={() => {
+                          setDisableData2test(true)
+                      }}
                       onChange={data2text}/>
         </div>
     );

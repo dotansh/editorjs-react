@@ -1,15 +1,11 @@
 import EditorJS from "@editorjs/editorjs";
-import Header from "@editorjs/header";
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useEffect, useRef} from "react";
 
 
-const useEditorjs = ({config, onReady = null, onChange = null}) => {
+const useEditorjs = ({config, onReady = null}) => {
     const ejInstance = useRef();
 
     const initEditor = () => {
-        if (onChange) {
-            config.onChange = onChange;
-        }
         try {
             const editor = new EditorJS({
                 ...config,
@@ -57,17 +53,12 @@ const useEditorjs = ({config, onReady = null, onChange = null}) => {
     }, []);
 
 
-    const getData = async () => {
-        try {
-            return ejInstance.current?.save();
-        } catch (error) {
-            console.error('Editorjs saving failed: ', error);
-        }
-
-        return "error";
+    const getEditor = async () => {
+        await ejInstance.current.isReady;
+        return ejInstance.current;
     }
 
-    return {getData, editor: ejInstance.current};
+    return {getEditor};
 }
 
 export default useEditorjs
