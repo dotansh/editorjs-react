@@ -1,0 +1,17 @@
+.container {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr;
+    gap: 20px;
+}
+
+.container section .wysiwyg {
+   background: #cbcdf1;
+}
+
+.container .code {
+    background: #a8dbe7;
+}
+
+.container div {
+    height: 200px;
+}
