@@ -1,33 +1,25 @@
 import EditorJS from "@editorjs/editorjs";
 import Header from "@editorjs/header";
 import {useCallback, useEffect, useRef, useState} from "react";
-import {useNavigate} from "react-router-dom";
 
 
- const useEditorjs = ({initialData = null, id}) => {
-    const navigate = useNavigate();
+const useEditorjs = ({config, onReady = null, onChange = null}) => {
     const ejInstance = useRef();
 
     const initEditor = () => {
+        if (onChange) {
+            config.onChange = onChange;
+        }
         try {
             const editor = new EditorJS({
-                holder: 'editorjs',
-                tools: {
-                    header: Header,
-                },
-                inlineToolbar: ['bold', 'italic'],
+                ...config,
                 onReady: () => {
                     ejInstance.current = editor;
-                    if (initialData) {
-                        editor.render(initialData);
+                    if (config.data) {
+                        editor.render(config.data);
                     }
-                },
-                i18n: {
-                    direction: 'rtl',
-                },
-                autofocus: !!initialData,
-                placeholder: initialData ? false : 'כאן כותבים את התוכן...',
-                data: initialData,
+                    onReady && onReady();  // Caller's onReady
+                }
             });
         } catch (e) {
             console.error('Failed to init editor: ', e);
@@ -65,37 +57,17 @@ import {useNavigate} from "react-router-dom";
     }, []);
 
 
-    const savePost = () => {
+    const getData = async () => {
+        try {
+            return ejInstance.current?.save();
+        } catch (error) {
+            console.error('Editorjs saving failed: ', error);
+        }
 
-        // get post data
-        ejInstance.current.save().then(async (outputData) => {
-            if (id === 'new') {
-                const reply = await fetch(import.meta.env.VITE_SREVER_URL + "/api/posts", {
-                    method: "POST",
-                    cache: "no-cache",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({title: "New post", content: JSON.stringify(outputData)})
-                });
-
-                if (reply.status === 200) {
-                    const user = await reply.json();
-                    navigate("/");
-                    return;
-                }
-
-                const errors = await reply.json();
-                console.error('Saving failed: ', errors);
-                //  return errors ? errors : ["Unknown error"];
-            }
-        }).catch((error) => {
-            console.error('Saving failed: ', error);
-        });
+        return "error";
     }
 
-    return {postElement: (<div id={"editorjs"}></div>), savePost, render};
+    return {getData, editor: ejInstance.current};
 }
 
 export default useEditorjs
