@@ -34,9 +34,9 @@ const YourCompement = () => {
         }
     });
     
-    // you can use getEditor to get the editor instance
+    // You can use getEditor to get the editor instance
     // and directly call save(), render(date) etc.
-    // use the returned render function in case of risk for a race condition with the editor creation
+    // Use the returned render function in case of risk for a race condition with the editor creation
 
     return (
             <section className="content" id={holder}/>
